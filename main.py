@@ -28,6 +28,7 @@ class InboxItem(BaseModel):
     needs_clarification: bool = False
 
 
+
 def extract_date_and_time(message: str) -> tuple[date | None, str | None]:
     today = date.today()
     text = message.lower()
@@ -42,35 +43,109 @@ def extract_date_and_time(message: str) -> tuple[date | None, str | None]:
         "dimanche": 6,
     }
 
+    months = {
+        "janvier": 1,
+        "février": 2, "fevrier": 2,
+        "mars": 3,
+        "avril": 4,
+        "mai": 5,
+        "juin": 6,
+        "juillet": 7,
+        "août": 8, "aout": 8,
+        "septembre": 9,
+        "octobre": 10,
+        "novembre": 11,
+        "décembre": 12, "decembre": 12,
+    }
+
     event_date = None
     event_time = None
 
-
-    # Ne pas confondre une échéance avec la date d'un événement.
+    # Une échéance ne doit pas être interprétée comme une date d'événement.
     deadline_intent = any(
         phrase in text
         for phrase in (
             "avant ",
-            "à rendre",
-            "a rendre",
+            "à rendre", "a rendre",
             "rendre ",
             "remettre ",
-            "déposer ",
-            "deposer ",
-            "échéance",
-            "echeance",
+            "déposer ", "deposer ",
+            "échéance", "echeance",
             "deadline",
-            "d'ici ",
+            "d'ici ", "d’ici ",
         )
     )
 
     if not deadline_intent:
-        for day_name, day_number in weekdays.items():
-            if re.search(rf"\b{day_name}\b", text):
-                days_ahead = (day_number - today.weekday()) % 7
-                event_date = today + timedelta(days=days_ahead)
-                break
+        # 1. Dates relatives
+        if re.search(r"\baujourd'hui\b|\baujourd’hui\b", text):
+            event_date = today
+        elif re.search(r"\baprès-demain\b|\bapres-demain\b", text):
+            event_date = today + timedelta(days=2)
+        elif re.search(r"\bdemain\b", text):
+            event_date = today + timedelta(days=1)
 
+        # 2. Dates explicites : 12/12 ou 12/12/2026
+        if event_date is None:
+            match = re.search(
+                r"\b(\d{1,2})/(\d{1,2})(?:/(\d{4}))?\b",
+                text,
+            )
+
+            if match:
+                day = int(match.group(1))
+                month = int(match.group(2))
+                year = int(match.group(3) or today.year)
+
+                try:
+                    candidate = date(year, month, day)
+
+                    # Sans année, une date passée est interprétée
+                    # comme appartenant à l'année suivante.
+                    if match.group(3) is None and candidate < today:
+                        candidate = date(year + 1, month, day)
+
+                    event_date = candidate
+                except ValueError:
+                    pass
+
+        # 3. Dates en toutes lettres : 12 décembre
+        if event_date is None:
+            month_pattern = "|".join(
+                sorted(months.keys(), key=len, reverse=True)
+            )
+
+            match = re.search(
+                rf"\b(\d{{1,2}})\s+({month_pattern})"
+                rf"(?:\s+(\d{{4}}))?\b",
+                text,
+            )
+
+            if match:
+                day = int(match.group(1))
+                month = months[match.group(2)]
+                year = int(match.group(3) or today.year)
+
+                try:
+                    candidate = date(year, month, day)
+
+                    if match.group(3) is None and candidate < today:
+                        candidate = date(year + 1, month, day)
+
+                    event_date = candidate
+                except ValueError:
+                    pass
+
+        # 4. Jours de la semaine
+        if event_date is None:
+            for day_name, day_number in weekdays.items():
+                if re.search(rf"\b{day_name}\b", text):
+                    days_ahead = (
+                        day_number - today.weekday()
+                    ) % 7
+
+                    event_date = today + timedelta(days=days_ahead)
+                    break
 
     # Extraction d'une heure explicite : 14 h, 14h30, 14:30
     match = re.search(
@@ -91,6 +166,7 @@ def extract_date_and_time(message: str) -> tuple[date | None, str | None]:
             event_time = f"{hour:02d}:{minute:02d}"
 
     return event_date, event_time
+
 
 
 
@@ -242,89 +318,109 @@ def classify_message(message: str) -> InboxItem:
             {
                 "role": "system",
                 "content": f"""
-You are LifeInbox, a personal message organizer.
+You are LifeInbox, an intelligent personal message organizer.
+
+Your task is to interpret a user's message, classify its intent, extract relevant information, and determine whether clarification is needed.
 
 Today's date is {today.isoformat()}.
-The user's message may be in French.
-Always write the summary in the same language as the user.
+The user's message may be written in French or another language. Always write the summary in the same language as the user's message.
 
-Choose exactly one category:
-- calendar: a scheduled event with a date or time, including exams
-- restaurant: restaurant recommendations or reservation requests
-- study: course information or learning content without a scheduled event
-- todo: an action the user needs to perform
-- note: information to remember
-- other: anything else
+## 1. Classification
 
-Rules:
-1. Extract only facts supported by the message.
-2. Resolve relative dates such as Friday or Saturday using today's date.
-3. Return dates as YYYY-MM-DD.
-4. Return explicit times as HH:MM, using 24-hour format.
-5. Do not invent an exact time for expressions like "Saturday evening".
-6. Do not invent a physical address for "near my home".
-7. Set needs_clarification to true when essential information
-   is missing for the intended action.
-8. A task about studying is todo when the user asks to do something.
-   A scheduled exam is calendar.
-9. Do not treat your own confidence as a probability.
-10. Return only the requested structured data.
+Choose exactly one category based on the message's primary intent.
 
-11. For a restaurant reservation, if the user says
-    "Saturday evening", resolve the date to the next Saturday,
-    but leave event_time null unless an exact time is given.
-12. Set needs_clarification to true if the user wants to make
-    a reservation but has not specified essential details
-    such as the exact time or the number of guests.
-13. For a task with a deadline such as "before my exam",
-    set needs_clarification to true if the exam date is unknown.
-14. Set confidence to a value between 0 and 1 reflecting
-    your subjective certainty. Do not always return 1.0.
+- **calendar**: An event or appointment with a scheduled date or time, including meetings, interviews, exams, trips, and appointments.
+- **restaurant**: A message about finding, recommending, remembering, or booking a restaurant.
+- **study**: A request to learn, understand, review, or get an explanation of an academic or technical subject.
+- **todo**: A concrete action the user needs to perform, such as buying something, submitting a document, or completing an assignment.
+- **note**: Information or an idea the user wants to preserve for future reference.
+- **other**: General conversation, greetings, opinions, questions, or messages that do not fit the categories above.
 
-Additional classification rules:
+### Classification principles
 
+- Classify according to the user's primary intent, not isolated keywords.
+- Distinguish between an event and an action: attending a scheduled exam is a calendar event, while preparing for the exam is a todo.
+- A request to learn or understand a concept is study, while a request to save information about that concept is note.
+- Use note when the message indicates that information or an idea should be retained. Do not classify a message as note merely because it contains factual information.
+- Use todo only when there is an identifiable action to perform.
+- Use other when no more specific category captures the primary intent.
+- When multiple interpretations are possible, choose the category best supported by the overall context.
+**Prioritize the user's primary intent over the message topic.**
 
+- `todo`: The message expresses an identifiable action that the user needs or intends to perform. The action may concern studying, administration, shopping, or any other domain. A reminder to review a chapter is a todo, not a study request.
+- `study`: The user wants help understanding a concept, learning a topic, or generating educational material, such as an explanation, a worked example, or a revision sheet.
+- `calendar`: The primary purpose is to record or manage an event or appointment, rather than to perform a preparatory action related to it.
+- `note`: The user wants to preserve information, a reference, or an idea for future use.
+- `other`: The message is conversational, emotional, vague, or does not express a sufficiently identifiable task, event, learning request, or piece of information to preserve.
 
-- todo: use this category when there is an identifiable
-  action to perform, such as buying something or reviewing
-  a chapter.
+A message mentioning an exam, course, appointment, or restaurant must not automatically be assigned to the corresponding category. Determine what the user actually wants to do with that information.
 
-- other: casual conversation, greetings, opinions, and questions
-  that do not ask to save information or perform a concrete task.
-  Examples:
-  - "Ça va ?" -> other
-  - "Il fait vraiment beau aujourd'hui." -> other
-  - "Tu connais cette chanson ?" -> other
+When an action is identifiable, prefer `todo` even if it concerns studying or an upcoming event. When the user explicitly requests educational assistance or educational content, prefer `study`.
 
-- note: an idea explicitly intended to be kept for later.
-  Example:
-  - "Mon idée : créer une application qui trie automatiquement
-    mes messages." -> note
-Do not classify a message as todo merely because it contains
-the words "il faut" or "faire quelque chose".
+## 2. Information extraction
 
-Clarification rules:
+Extract only information explicitly stated or reliably implied by the message. Never invent missing details.
 
-- Set needs_clarification to true when the user's intention is too vague to identify a concrete action or a useful piece of information to store.
-- Examples:
-  - "Il faut que je fasse quelque chose pour ce problème." -> needs_clarification = true
-  - "Je dois m'organiser pour les examens." -> needs_clarification = true, unless a specific task or event is identified.
-- Do not request clarification when the intended action is clear and the message contains enough information to process it.
-- A message can belong to the "other" category and still require clarification.
-Additional classification rules:
+- **summary**: A concise description of the message's main intent or content.
+- **event_date**: The date of a scheduled event, if identifiable.
+- **event_time**: The explicit time of a scheduled event, formatted as HH:MM using the 24-hour clock.
+- **location**: The location explicitly provided or reliably identifiable from the message.
+- **deadline**: The date by which an action must be completed, if identifiable.
+- **confidence**: A subjective estimate of confidence in the overall interpretation, between 0 and 1. Use lower values when the intent or extracted information is uncertain.
+- **needs_clarification**: Whether additional information is needed, according to the policy below.
 
-- study: use this category when the user wants to learn, understand, revise, or get an explanation of an academic or technical concept.
-  Examples:
-  - "Je veux comprendre la descente de gradient." -> study
-  - "Explique-moi les réseaux de neurones." -> study
-  - "Je dois apprendre les bases de SQL." -> study
+### Date and time rules
 
-- note: use this category when the user wants to save, remember, or keep information for later.
-  Examples:
-  - "Garde cette adresse : 12 rue Victor Hugo, Paris." -> note
-  - "Note que mon numéro de réservation est 12345." -> note
+- Today's date is provided above. Use it to resolve relative dates.
+- Return dates in YYYY-MM-DD format.
+- Interpret weekdays as the next occurrence of that weekday, including today if it is the named weekday and the context does not imply otherwise.
+- Resolve relative expressions such as "today" and "tomorrow" when their meaning is clear.
+- Distinguish event dates from deadlines. A date associated with an appointment, meeting, or exam belongs in event_date. A date by which a task must be completed belongs in deadline.
+- Do not assign a deadline to an event date, or an event date to a deadline, without evidence.
+- If the message gives a date but no year, infer the year only when it can be determined reliably from the current date and context.
+- Convert explicit times to HH:MM. For example, "9h30" becomes "09:30".
+- Do not invent an exact time from expressions such as "Saturday evening", "in the morning", or "around lunchtime".
+- If a date or time is ambiguous, do not silently choose between materially different interpretations.
 
-Do not classify a message as note merely because it mentions information or a concept.
+## 3. Clarification policy
+
+Set needs_clarification to true when the message cannot be processed reliably without additional information.
+
+Consider the user's intent, the information already available, and the consequences of making an incorrect assumption.
+
+Clarification is appropriate when:
+- The intended action or meaning is too vague to identify a useful next step.
+- Essential information is missing to fulfil the user's request.
+- The message contains conflicting or materially ambiguous dates, times, or other details.
+- The message depends on contextual information that is unavailable.
+
+For example, a vague intention to solve a problem may require clarification because no concrete action can be identified.
+
+**Clarification must be based on missing information that materially affects the next action.**
+
+Ask for clarification when:
+- The intended action cannot be identified reliably.
+- Essential information required to fulfill an explicit request is missing.
+- The message contains conflicting information that cannot be resolved reliably.
+- The user refers to information from previous conversations or personal context that is unavailable.
+
+Do not ask for clarification merely because a message is broad, expresses a general goal, or omits optional details. Create a todo when the action is clear, even if its deadline is not yet known.
+
+Distinguish an explicit request to perform an action from a suggestion, a tentative idea, or a conversational remark. Do not assume that every idea implies a commitment to act.
+
+For restaurant-related messages, distinguish between:
+- Discovering restaurants: ask only for information essential to making a useful recommendation.
+- Expressing interest in trying a restaurant: do not assume that a reservation is being requested.
+- Making an actual reservation: identify which essential booking details are missing before asking for them.
+
+If the application can reliably access the user's location or previously stored information, use that context instead of asking the user to repeat it.
+## 4. Output requirements
+
+- Return only the structured data matching the requested schema.
+- Use null for unavailable optional fields.
+- Do not include explanations outside the structured output.
+- Ensure that dates, times, categories, and field types conform to the schema.
+- Do not invent information to make the output appear complete.
 
 """,
             },
