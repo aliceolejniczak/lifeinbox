@@ -45,12 +45,32 @@ def extract_date_and_time(message: str) -> tuple[date | None, str | None]:
     event_date = None
     event_time = None
 
-    # Extraction du prochain jour de la semaine mentionné
-    for day_name, day_number in weekdays.items():
-        if re.search(rf"\b{day_name}\b", text):
-            days_ahead = (day_number - today.weekday()) % 7
-            event_date = today + timedelta(days=days_ahead)
-            break
+
+    # Ne pas confondre une échéance avec la date d'un événement.
+    deadline_intent = any(
+        phrase in text
+        for phrase in (
+            "avant ",
+            "à rendre",
+            "a rendre",
+            "rendre ",
+            "remettre ",
+            "déposer ",
+            "deposer ",
+            "échéance",
+            "echeance",
+            "deadline",
+            "d'ici ",
+        )
+    )
+
+    if not deadline_intent:
+        for day_name, day_number in weekdays.items():
+            if re.search(rf"\b{day_name}\b", text):
+                days_ahead = (day_number - today.weekday()) % 7
+                event_date = today + timedelta(days=days_ahead)
+                break
+
 
     # Extraction d'une heure explicite : 14 h, 14h30, 14:30
     match = re.search(
@@ -71,6 +91,57 @@ def extract_date_and_time(message: str) -> tuple[date | None, str | None]:
             event_time = f"{hour:02d}:{minute:02d}"
 
     return event_date, event_time
+
+
+
+def extract_deadline(message: str) -> date | None:
+    """Extrait une échéance explicite, sans la confondre avec un événement."""
+    text = message.lower()
+    today = date.today()
+
+    # Dates relatives simples
+    if re.search(r"\bdemain\b", text):
+        return today + timedelta(days=1)
+
+    if re.search(r"\baujourd'hui\b|\baujourdhui\b", text):
+        return today
+
+    weekdays = {
+        "lundi": 0,
+        "mardi": 1,
+        "mercredi": 2,
+        "jeudi": 3,
+        "vendredi": 4,
+        "samedi": 5,
+        "dimanche": 6,
+    }
+
+    # Indices indiquant que le jour mentionné est une échéance.
+    deadline_intent = any(
+        phrase in text
+        for phrase in (
+            "avant ",
+            "à rendre",
+            "a rendre",
+            "rendre ",
+            "remettre ",
+            "déposer ",
+            "deposer ",
+            "échéance",
+            "echeance",
+            "deadline",
+            "d'ici ",
+        )
+    )
+
+    if deadline_intent:
+        for day_name, day_number in weekdays.items():
+            if re.search(rf"\b{day_name}\b", text):
+                days_ahead = (day_number - today.weekday()) % 7
+                return today + timedelta(days=days_ahead)
+
+    return None
+
 
 
 def requires_clarification(
@@ -115,21 +186,6 @@ def requires_clarification(
             ):
                 return True
 
-            # "Près de chez moi" ne fournit pas une localisation
-            # exploitable si l'adresse n'est pas connue.
-            if (
-                any(
-                    phrase in text
-                    for phrase in (
-                        "près de chez moi",
-                        "pres de chez moi",
-                        "à côté de chez moi",
-                        "a cote de chez moi",
-                    )
-                )
-                and result.location is None
-            ):
-                return True
 
     # Tâche liée à un contrôle/examen dont la date est inconnue
     if result.category == Category.TODO:
@@ -146,6 +202,33 @@ def requires_clarification(
 
         if mentions_exam and result.deadline is None:
             return True
+
+    
+    # Événements ambigus ou dont la date reste imprécise
+    if result.category == Category.CALENDAR:
+        if "la semaine prochaine" in text:
+            return True
+
+        if re.search(
+            r"\b(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)"
+            r"\s+ou\s+"
+            r"(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\b",
+            text,
+        ):
+            return True
+    # Tâche avec une échéance imprécise
+    if result.category == Category.TODO:
+        if re.search(r"\b(bientôt|prochainement|rapidement)\b", text):
+            return True
+
+    # Intention d'apprentissage trop vague
+    if result.category == Category.STUDY:
+        if "progresser en" in text and not any(
+            word in text
+            for word in ("comment", "explique", "apprendre", "réviser", "revoir")
+        ):
+            return True
+
 
     return result.needs_clarification
 
@@ -200,20 +283,23 @@ Rules:
 
 Additional classification rules:
 
-- note: use this category when the user explicitly asks to
-  save or remember information, such as an address.
-  Example: "Garde cette adresse : 12 rue Victor Hugo, Paris."
-  -> note
+
 
 - todo: use this category when there is an identifiable
   action to perform, such as buying something or reviewing
   a chapter.
 
-- other: use this category when the message expresses only
-  a vague intention or concern without an identifiable task.
-  Example: "Il faut que je fasse quelque chose pour ce problème."
-  -> other
+- other: casual conversation, greetings, opinions, and questions
+  that do not ask to save information or perform a concrete task.
+  Examples:
+  - "Ça va ?" -> other
+  - "Il fait vraiment beau aujourd'hui." -> other
+  - "Tu connais cette chanson ?" -> other
 
+- note: an idea explicitly intended to be kept for later.
+  Example:
+  - "Mon idée : créer une application qui trie automatiquement
+    mes messages." -> note
 Do not classify a message as todo merely because it contains
 the words "il faut" or "faire quelque chose".
 
@@ -250,7 +336,9 @@ Do not classify a message as note merely because it mentions information or a co
 
     result = InboxItem.model_validate_json(response.message.content)
 
+    
     extracted_date, extracted_time = extract_date_and_time(message)
+    extracted_deadline = extract_deadline(message)
 
     updates = {}
 
@@ -259,6 +347,10 @@ Do not classify a message as note merely because it mentions information or a co
 
     if extracted_time is not None:
         updates["event_time"] = extracted_time
+
+    if extracted_deadline is not None:
+        updates["deadline"] = extracted_deadline
+
 
     result = result.model_copy(update=updates)
 
