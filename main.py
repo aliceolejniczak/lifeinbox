@@ -339,23 +339,40 @@ Choose exactly one category based on the message's primary intent.
 ### Classification principles
 
 - Classify according to the user's primary intent, not isolated keywords.
+- Identify what the user wants to achieve with the message before choosing a category.
+- Choose the most specific category that captures the primary intent.
+- Do not classify a message based only on the topic it mentions. A message about an exam, course, appointment, or restaurant does not automatically belong to the corresponding category.
 - Distinguish between an event and an action: attending a scheduled exam is a calendar event, while preparing for the exam is a todo.
-- A request to learn or understand a concept is study, while a request to save information about that concept is note.
-- Use note when the message indicates that information or an idea should be retained. Do not classify a message as note merely because it contains factual information.
-- Use todo only when there is an identifiable action to perform.
-- Use other when no more specific category captures the primary intent.
-- When multiple interpretations are possible, choose the category best supported by the overall context.
-**Prioritize the user's primary intent over the message topic.**
+- Distinguish between asking for educational assistance and expressing an intention to study independently.
+- Use `note` when the user wants information or an idea to be retained. Do not classify a message as `note` merely because it contains factual information.
+- Use `todo` only when there is an identifiable action the user needs or intends to perform.
+- Use `other` when no more specific category captures the primary intent.
 
-- `todo`: The message expresses an identifiable action that the user needs or intends to perform. The action may concern studying, administration, shopping, or any other domain. A reminder to review a chapter is a todo, not a study request.
-- `study`: The user wants help understanding a concept, learning a topic, or generating educational material, such as an explanation, a worked example, or a revision sheet.
-- `calendar`: The primary purpose is to record or manage an event or appointment, rather than to perform a preparatory action related to it.
-- `note`: The user wants to preserve information, a reference, or an idea for future use.
-- `other`: The message is conversational, emotional, vague, or does not express a sufficiently identifiable task, event, learning request, or piece of information to preserve.
+### Category precedence rules
 
-A message mentioning an exam, course, appointment, or restaurant must not automatically be assigned to the corresponding category. Determine what the user actually wants to do with that information.
+When multiple categories seem plausible, apply these rules:
 
-When an action is identifiable, prefer `todo` even if it concerns studying or an upcoming event. When the user explicitly requests educational assistance or educational content, prefer `study`.
+- **Restaurant takes precedence over todo** when the primary intent concerns finding, recommending, remembering, or booking a restaurant. Booking a table is still a `restaurant` intent, even though making a reservation is an action.
+- **Study takes precedence over todo** when the user explicitly requests an explanation, help understanding a concept, a worked example, or educational material such as a revision sheet.
+- **Todo takes precedence over study** when the user expresses an action to complete, such as reviewing a chapter, practising exercises, or submitting an assignment, without asking the assistant to provide educational assistance.
+- **Calendar takes precedence over todo** when the primary intent is to record or manage a scheduled event or appointment. Use `todo` for preparatory actions related to that event.
+- **Note takes precedence over other** when the primary intent is to preserve information, a reference, or an idea for future use.
+- Use `todo` for identifiable actions that do not have a more specific category matching their primary intent.
+- Use `other` when the message is conversational, emotional, vague, or does not express a sufficiently identifiable task, event, learning request, or piece of information to preserve.
+
+Examples:
+
+- "Réserve une table samedi à 19 h pour deux personnes." → `restaurant`
+- "Je voudrais réserver un restaurant italien samedi soir." → `restaurant`
+- "Trouve-moi un restaurant japonais près de chez moi." → `restaurant`
+- "On pourrait essayer ce restaurant libanais." → `restaurant`
+- "Pense à réserver mes billets de train." → `todo`
+- "Pense à revoir le chapitre 3 avant mon contrôle." → `todo`
+- "Explique-moi les méthodes de Monte-Carlo." → `study`
+- "Fais-moi une fiche de révision sur les méthodes de Monte-Carlo." → `study`
+- "Mon idée : créer une application qui trie automatiquement mes messages." → `note`
+- "Mon numéro de réservation est ABC123, note-le." → `note`
+- "Je ne sais pas quoi faire de ce problème." → `other`, with clarification if no useful next step can be identified.
 
 ## 2. Information extraction
 
@@ -375,52 +392,62 @@ Extract only information explicitly stated or reliably implied by the message. N
 - Return dates in YYYY-MM-DD format.
 - Interpret weekdays as the next occurrence of that weekday, including today if it is the named weekday and the context does not imply otherwise.
 - Resolve relative expressions such as "today" and "tomorrow" when their meaning is clear.
-- Distinguish event dates from deadlines. A date associated with an appointment, meeting, or exam belongs in event_date. A date by which a task must be completed belongs in deadline.
+- Distinguish event dates from deadlines. A date associated with an appointment, meeting, or exam belongs in `event_date`. A date by which a task must be completed belongs in `deadline`.
 - Do not assign a deadline to an event date, or an event date to a deadline, without evidence.
 - If the message gives a date but no year, infer the year only when it can be determined reliably from the current date and context.
 - Convert explicit times to HH:MM. For example, "9h30" becomes "09:30".
 - Do not invent an exact time from expressions such as "Saturday evening", "in the morning", or "around lunchtime".
 - If a date or time is ambiguous, do not silently choose between materially different interpretations.
+- Do not confuse a deadline with an event date merely because both are associated with a date.
 
 ## 3. Clarification policy
 
-Set needs_clarification to true when the message cannot be processed reliably without additional information.
+Set `needs_clarification` to `true` when the message cannot be processed reliably without additional information.
 
 Consider the user's intent, the information already available, and the consequences of making an incorrect assumption.
 
 Clarification is appropriate when:
+
 - The intended action or meaning is too vague to identify a useful next step.
-- Essential information is missing to fulfil the user's request.
+- Essential information is missing to fulfil the user's explicit request.
 - The message contains conflicting or materially ambiguous dates, times, or other details.
 - The message depends on contextual information that is unavailable.
 
-For example, a vague intention to solve a problem may require clarification because no concrete action can be identified.
-
-**Clarification must be based on missing information that materially affects the next action.**
+Clarification must be based on missing information that materially affects the next action.
 
 Ask for clarification when:
+
 - The intended action cannot be identified reliably.
-- Essential information required to fulfill an explicit request is missing.
-- The message contains conflicting information that cannot be resolved reliably.
+- Essential information required to fulfil an explicit request is missing.
+- The user provides conflicting information that cannot be resolved reliably.
 - The user refers to information from previous conversations or personal context that is unavailable.
 
-Do not ask for clarification merely because a message is broad, expresses a general goal, or omits optional details. Create a todo when the action is clear, even if its deadline is not yet known.
+Do not ask for clarification merely because a message is broad, expresses a general goal, or omits optional details. Create a `todo` when the action is clear, even if its deadline is not yet known.
 
 Distinguish an explicit request to perform an action from a suggestion, a tentative idea, or a conversational remark. Do not assume that every idea implies a commitment to act.
 
-For restaurant-related messages, distinguish between:
-- Discovering restaurants: ask only for information essential to making a useful recommendation.
-- Expressing interest in trying a restaurant: do not assume that a reservation is being requested.
-- Making an actual reservation: identify which essential booking details are missing before asking for them.
+### Restaurant-specific clarification rules
 
-If the application can reliably access the user's location or previously stored information, use that context instead of asking the user to repeat it.
+For restaurant-related messages, distinguish between:
+
+- **Discovering restaurants**: Ask for clarification only when information essential to making a useful recommendation is missing. Do not ask unnecessary questions when a reasonable recommendation can already be made.
+- **Expressing interest in trying a restaurant**: Do not assume that a reservation is being requested. Do not ask for booking details unless the user expresses an intention to book.
+- **Making an actual reservation**: Identify which essential booking details are missing before asking for them. Depending on the request, these may include the restaurant, date, time, or party size.
+- **Remembering a restaurant**: If the user asks about a restaurant mentioned in a previous conversation and that context is unavailable, set `needs_clarification` to `true`. Do not invent the restaurant's name.
+
+A restaurant message must remain in the `restaurant` category even when clarification is needed.
+
+If the application can reliably access the user's location or previously stored information, use that context instead of asking the user to repeat it. Do not claim to have access to context that is not actually available.
+
 ## 4. Output requirements
 
 - Return only the structured data matching the requested schema.
-- Use null for unavailable optional fields.
+- Use `null` for unavailable optional fields.
 - Do not include explanations outside the structured output.
 - Ensure that dates, times, categories, and field types conform to the schema.
 - Do not invent information to make the output appear complete.
+- Set `needs_clarification` based on the clarification policy, independently of the selected category.
+- Set `confidence` according to the reliability of the overall interpretation and extraction, not merely the presence or absence of missing optional fields.
 
 """,
             },
