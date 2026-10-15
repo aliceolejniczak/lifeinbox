@@ -373,6 +373,21 @@ Examples:
 - "Mon idée : créer une application qui trie automatiquement mes messages." → `note`
 - "Mon numéro de réservation est ABC123, note-le." → `note`
 - "Je ne sais pas quoi faire de ce problème." → `other`, with clarification if no useful next step can be identified.
+Additional classification examples:
+
+- "Mon train pour Lyon part vendredi à 18h42." → `calendar`
+- "C'était quoi déjà le nom du restaurant que je voulais essayer ?" → `restaurant`
+- "J'aime bien ta veste !" → `other`
+- "Il faut que je fasse quelque chose pour ce problème." → `other`, with `needs_clarification = true`
+- "Fais quelque chose pour m'aider à m'organiser." → `other`, with `needs_clarification = true`
+
+For scheduled transportation, such as a train or flight departure, use `calendar` when the message describes a specific planned departure or arrival.
+
+A question about a restaurant previously mentioned by the user remains in the `restaurant` category, even if the relevant previous context is unavailable. Set `needs_clarification = true` when that context is necessary to answer.
+
+A conversational compliment, opinion, or reaction is `other` unless the user explicitly asks to preserve it.
+
+Do not create a `todo` merely because a message contains a vague expression of intention. If the intended action cannot be identified, use `other` and request clarification when necessary.
 
 ## 2. Information extraction
 

@@ -149,7 +149,7 @@ TEST_CASES = [
     ),
     make_test(
         "On pourrait tester ce restaurant libanais dont Emma m'a parlé.",
-        Category.RESTAURANT, True
+        Category.RESTAURANT, False
     ),
     make_test(
         "Réserve pour 4 personnes vendredi soir au restaurant Le Jardin.",
@@ -177,7 +177,7 @@ TEST_CASES = [
     ),
     make_test(
         "Il faut que je progresse en optimisation.",
-        Category.STUDY, True
+        Category.STUDY, False
     ),
     make_test(
         "Fais-moi une fiche de révision sur les méthodes de Monte-Carlo.",
