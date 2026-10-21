@@ -1,0 +1,61 @@
+source_id,message,true_category,predicted_category,correct
+train_line_0233,"Ah mince, j'espère que ça va s'arranger.",other,other,True
+train_line_0123,"Déjeuner avec Clara dans 5 jours à midi, au Café de Flore.",calendar,calendar,True
+train_line_0008,Mon examen est dans 5 jours à 8 h 30.,calendar,calendar,True
+train_line_0065,Mon vol décolle dans 6 jours à 7 h 20.,calendar,calendar,True
+train_line_0047,Le café que j’ai aimé s’appelle Café Kitsuné.,note,note,True
+train_line_0061,Le rendez-vous avec ma tutrice est dans 4 jours à 10 h.,calendar,calendar,True
+train_line_0132,Réserve une table pour deux chez Pink Mamma demain à 20 h.,restaurant,restaurant,True
+train_line_0284,Les exports de résultats doivent garder les identifiants d'origine.,note,study,False
+train_line_0031,Rendre le TP de probabilités avant demain.,todo,todo,True
+train_line_0121,J'ai mon rendez-vous chez le dentiste dans 3 jours à 10 h.,calendar,calendar,True
+train_line_0207,Explique-moi la programmation dynamique avec un petit exemple numérique.,study,study,True
+train_line_0012,Je cherche un restaurant italien à Paris.,restaurant,restaurant,True
+train_line_0298,Je te redis ça quand j'en sais plus.,other,other,True
+train_line_0098,N’oublie pas de résilier l’abonnement avant la fin du mois.,todo,todo,True
+train_line_0213,Il faut que je prenne mes billets de train d'ici 5 jours.,todo,todo,True
+train_line_0271,Il faut que je dépose le formulaire avant le 10 décembre.,todo,todo,True
+train_line_0139,Le restaurant Le Grand Véfour sert-il un menu déjeuner ?,restaurant,restaurant,True
+train_line_0117,Il fait vraiment froid aujourd’hui.,other,other,True
+train_line_0143,Tu peux me faire une fiche de révision sur les méthodes de Monte-Carlo ?,study,study,True
+train_line_0220,Préparer les slides de la présentation dans 3 jours.,todo,calendar,False
+train_line_0235,On a vraiment eu de la chance avec le temps aujourd'hui.,other,other,True
+train_line_0166,Le numéro de dossier du projet est DS-2048.,note,note,True
+train_line_0017,Trouve-moi un restaurant de sushi près de mon bureau.,restaurant,restaurant,True
+train_line_0291,Tu es dispo deux minutes ?,other,other,True
+train_line_0268,Comment choisir le seuil de décision d'un classifieur binaire ?,study,study,True
+train_line_0168,"Pour les prochaines analyses, les données doivent être anonymisées.",note,note,True
+train_line_0049,La salle de réunion habituelle est au deuxième étage.,note,note,True
+train_line_0219,Pense à renouveler l'assurance avant le 15 décembre.,todo,todo,True
+train_line_0110,Le cadeau commun est organisé par Camille.,note,note,True
+train_line_0270,Je n'arrive pas à comprendre le principe de la régularisation L1 et L2.,study,study,True
+train_line_0069,J’ai un rendez-vous vendredi à 13 h.,calendar,calendar,True
+train_line_0155,Achète des piles quand tu passes au supermarché.,todo,restaurant,False
+train_line_0087,Quelle est la différence entre un gradient et un jacobien ?,study,study,True
+train_line_0048,Ma liste de lecture contient trois articles sur les LLM.,note,study,False
+train_line_0225,Le train retour arrive à la gare de Massy-Palaiseau.,note,note,True
+train_line_0075,On commande des sushis ce soir ?,restaurant,restaurant,True
+train_line_0239,"Pas de souci, merci de m'avoir prévenue !",other,other,True
+train_line_0278,Envoie les justificatifs dans 8 jours au plus tard.,todo,todo,True
+train_line_0138,Trouve un restaurant ouvert près de la gare de Nantes.,restaurant,restaurant,True
+train_line_0253,Tu sais si le restaurant accepte les chiens en terrasse ?,restaurant,restaurant,True
+train_line_0042,Mon idée pour le projet : ajouter une recherche par mots-clés.,note,note,True
+train_line_0023,Fais-moi un quiz sur les lois de probabilité.,study,study,True
+train_line_0148,C'est quoi la différence entre une loss BCE et une cross-entropy multiclasses ?,study,study,True
+train_line_0192,Est-ce que le restaurant Arpège a une étoile Michelin ?,restaurant,restaurant,True
+train_line_0292,J'ai complètement oublié ce que je voulais te dire.,other,restaurant,False
+train_line_0129,"La soutenance est le 12 décembre à 11 h, à Palaiseau.",calendar,note,False
+train_line_0196,Trouve-moi un restaurant avec terrasse à proximité du Louvre.,restaurant,restaurant,True
+train_line_0189,Il faudrait qu'on se voie bientôt pour parler du dossier.,calendar,note,False
+train_line_0158,Pense à sauvegarder le projet avant de fermer l'ordinateur.,todo,todo,True
+train_line_0178,Bon courage pour ta journée !,other,other,True
+train_line_0055,Tu as vu la météo aujourd’hui ?,other,other,True
+train_line_0073,Réserve pour six personnes samedi à 20 h au Bouillon République.,restaurant,restaurant,True
+train_line_0058,Tu préfères le thé ou le café ?,other,other,True
+train_line_0104,Le format de date utilisé par l’API est AAAA-MM-JJ.,note,note,True
+train_line_0266,Je voudrais un exemple concret de programmation linéaire en nombres entiers.,study,study,True
+train_line_0022,Je dois réviser les chaînes de Markov.,study,study,True
+train_line_0091,Pense à envoyer les justificatifs avant demain.,todo,todo,True
+train_line_0250,On avait dit qu'on se retrouverait quelque part la semaine prochaine.,calendar,calendar,True
+train_line_0243,J'ai promis de passer voir Mamie dans 3 jours après le déjeuner.,calendar,calendar,True
+train_line_0202,"Je confonds toujours précision, rappel et score F1, tu peux m'expliquer ?",study,study,True

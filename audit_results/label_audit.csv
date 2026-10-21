@@ -1,0 +1,102 @@
+﻿test_id,message,expected_category,predicted_category,category_error,expected_clarification,predicted_clarification,clarification_error,event_date_expected,event_date_predicted,event_time_expected,event_time_predicted,deadline_expected,deadline_predicted,duplicate_message,label_review
+1,La soutenance de mon projet aura lieu mercredi à 15h.,calendar,calendar,False,False,False,False,2026-10-21,2026-10-21,15:00,15:00,,,False,
+2,J'ai un rendez-vous chez l'ophtalmo demain à 8h45.,calendar,calendar,False,False,False,False,2026-10-16,2026-10-16,08:45,08:45,,2026-10-16,False,
+3,Le vol pour Rome décolle le 22 octobre à 7h10.,calendar,calendar,False,False,False,False,2026-10-22,2026-10-22,07:10,07:10,,,False,
+4,Mon prochain entretien est prévu le 3 novembre.,calendar,calendar,False,False,False,False,2026-11-03,2026-11-03,,,,,False,
+5,Le cours de statistiques commence jeudi à 13h30.,calendar,study,True,False,False,False,2026-10-15,2026-10-15,13:30,13:30,,,False,Vérifier le label ou la prédiction
+6,Je dois être à la gare à 6h demain.,calendar,todo,True,False,False,False,2026-10-16,2026-10-16,06:00,06:00,,2026-10-16,False,Vérifier le label ou la prédiction
+7,Le rendez-vous avec le notaire est lundi ou mardi.,calendar,calendar,False,True,True,False,,2026-10-19,,,,,False,
+8,La conférence aura lieu le 18 décembre à 17h.,calendar,calendar,False,False,False,False,2026-12-18,2026-12-18,17:00,17:00,,,False,
+9,J'ai un contrôle de probabilités la semaine prochaine.,calendar,study,True,True,False,True,,,,,,,False,Vérifier le label ou la prédiction
+10,Le dîner d'anniversaire de Paul est samedi à 20h.,calendar,calendar,False,False,False,False,2026-10-17,2026-10-17,20:00,20:00,,,False,
+11,Quels restaurants végétariens me conseilles-tu à Bordeaux ?,restaurant,restaurant,False,False,False,False,,,,,,,False,
+12,J'aimerais tester un restaurant coréen ce week-end.,restaurant,restaurant,False,False,False,False,,,,,,,False,
+13,Peux-tu réserver une table chez La Piazza demain à 20h pour 5 ?,restaurant,restaurant,False,False,False,False,2026-10-16,2026-10-16,20:00,20:00,,2026-10-16,False,
+14,Trouve une bonne adresse pour manger des ramen.,restaurant,restaurant,False,False,False,False,,,,,,,False,
+15,Il faudrait réserver une table pour six vendredi soir.,restaurant,todo,True,True,False,True,2026-10-16,2026-10-16,,,,,False,Vérifier le label ou la prédiction
+16,Quel était le café que Léa m'avait recommandé la semaine dernière ?,restaurant,restaurant,False,True,True,False,,,,,,,False,
+17,J'ai envie de retourner au restaurant où nous sommes allés à Lyon.,restaurant,restaurant,False,True,False,True,,,,,,,False,
+18,Réserve pour deux personnes demain soir chez Le Bistrot Vert.,restaurant,restaurant,False,True,False,True,2026-10-16,2026-10-16,,,,2026-10-16,False,
+19,Tu connais un bon restaurant de poissons à Marseille ?,restaurant,restaurant,False,False,False,False,,,,,,,False,
+20,Garde en tête que je voudrais essayer le nouveau restaurant grec.,restaurant,restaurant,False,False,False,False,,,,,,,False,
+21,Peux-tu m'expliquer intuitivement le théorème de Bayes ?,study,study,False,False,False,False,,,,,,,False,
+22,Quelle est la différence entre un RNN et un Transformer ?,study,other,True,False,False,False,,,,,,,False,Vérifier le label ou la prédiction
+23,Aide-moi à comprendre le fonctionnement d'un filtre de Kalman.,study,study,False,False,False,False,,,,,,,False,
+24,Je voudrais apprendre les bases de SQL.,study,study,False,False,False,False,,,,,,,False,
+25,Prépare-moi une fiche sur les conditions KKT.,study,note,True,False,False,False,,,,,,,False,Vérifier le label ou la prédiction
+26,Pourquoi utilise-t-on une fonction de perte dans un réseau de neurones ?,study,note,True,False,False,False,,,,,,,False,Vérifier le label ou la prédiction
+27,Je dois apprendre les propriétés des variables gaussiennes.,study,study,False,False,False,False,,,,,,,False,
+28,Donne-moi un exemple détaillé de descente de gradient.,study,study,False,False,False,False,,,,,,,False,
+29,J'aimerais mieux comprendre la programmation dynamique.,study,study,False,False,False,False,,,,,,,False,
+30,Comment fonctionne la régularisation L1 par rapport à L2 ?,study,other,True,False,False,False,,,,,,,False,Vérifier le label ou la prédiction
+31,N'oublie pas de récupérer mon colis au point relais.,todo,todo,False,False,False,False,,,,,,,False,
+32,Il faut que je renouvelle mon passeport.,todo,todo,False,False,False,False,,,,,,,False,
+33,Envoie la facture à Thomas avant vendredi.,todo,todo,False,False,False,False,,,,,2026-10-16,2026-10-16,False,
+34,Pense à prendre rendez-vous chez le coiffeur.,todo,todo,False,False,False,False,,,,,,,False,
+35,Je dois terminer la présentation pour lundi.,todo,todo,False,False,False,False,,2026-10-19,,,2026-10-19,,False,
+36,Acheter de la lessive et du dentifrice.,todo,todo,False,False,False,False,,,,,,,False,
+37,N'oublie pas de sauvegarder les fichiers du projet.,todo,todo,False,False,False,False,,,,,,,False,
+38,Il faut que je dépose le formulaire avant le 25 octobre.,todo,todo,False,False,False,False,,,,,2026-10-25,,False,
+39,Appelle l'assurance pour vérifier mon contrat.,todo,todo,False,False,False,False,,,,,,,False,
+40,Je dois finir le compte rendu avant demain.,todo,todo,False,False,False,False,,,,,2026-10-16,2026-10-16,False,
+41,À retenir : le numéro du local informatique est B204.,note,note,False,False,False,False,,,,,,,False,
+42,Note cette référence de livre : ISBN 978-0134685991.,note,note,False,False,False,False,,,,,,,False,
+43,"Le code de l'immeuble est 7352, garde-le pour plus tard.",note,todo,True,False,False,False,,,,,,,False,Vérifier le label ou la prédiction
+44,Idée pour le projet : ajouter un système de recherche sémantique.,note,note,False,False,False,False,,,,,,,False,
+45,"Le nom du contact RH est Sophie Martin, retiens-le.",note,todo,True,False,False,False,,,,,,,False,Vérifier le label ou la prédiction
+46,"Mon numéro de dossier est FR-82416, conserve cette information.",note,note,False,False,False,False,,,,,,,False,
+47,J'ai repéré un livre intéressant sur les modèles de langage.,note,note,False,False,False,False,,,,,,,False,
+48,La salle de réunion habituelle est au troisième étage.,note,calendar,True,False,False,False,,,,,,,False,Vérifier le label ou la prédiction
+49,Souviens-toi que je préfère les réunions le matin.,note,todo,True,False,False,False,,,,,,,False,Vérifier le label ou la prédiction
+50,Pour plus tard : l'idée d'organiser un week-end à Lisbonne.,note,note,False,False,False,False,,,,,,,False,
+51,Je suis épuisée aujourd'hui.,other,note,True,False,False,False,,2026-10-15,,,,2026-10-15,False,Vérifier le label ou la prédiction
+52,Tu as passé un bon week-end ?,other,other,False,False,False,False,,,,,,,False,
+53,Cette série est vraiment incroyable.,other,note,True,False,False,False,,,,,,,False,Vérifier le label ou la prédiction
+54,Je ne sais plus par où commencer.,other,other,False,True,False,True,,,,,,,False,
+55,J'hésite beaucoup en ce moment.,other,other,False,True,False,True,,,,,,,False,
+56,Il faudrait que ma vie soit un peu moins chaotique.,other,other,False,True,False,True,,,,,,,False,
+57,Ce morceau me rappelle les vacances.,other,note,True,False,False,False,,,,,,,False,Vérifier le label ou la prédiction
+58,Tu crois que ça va s'arranger ?,other,other,False,True,False,True,,,,,,,False,
+59,"Franchement, quelle journée interminable !",other,other,False,False,False,False,,,,,,,False,
+60,"Je suis contente, j'ai enfin un peu de temps libre.",other,note,True,False,False,False,,,,,,,False,Vérifier le label ou la prédiction
+61,rdv dentiste jeudi a 14h30 faut pas que joublie,calendar,calendar,False,False,False,False,2026-10-15,2026-10-15,14:30,14:30,,,False,
+62,On se voit demain vers 18h chez moi,calendar,calendar,False,False,False,False,2026-10-16,2026-10-16,18:00,18:00,,2026-10-16,False,
+63,Réunion avec le groupe mardi prochain je crois,calendar,calendar,False,True,False,True,,2026-10-20,,,,,False,
+64,c'est quand deja le truc avec marie ?,other,todo,True,True,False,True,,,,,,,False,Vérifier le label ou la prédiction
+65,ciné vendredi 20h mais jsais plus quel film,calendar,todo,True,False,False,False,2026-10-16,2026-10-16,20:00,20:00,,,False,Vérifier le label ou la prédiction
+66,demain jai un truc a 16h ou 17h jsp,calendar,todo,True,True,False,True,2026-10-16,2026-10-16,,16:00,,2026-10-16,False,Vérifier le label ou la prédiction
+67,penser au rdv de la semaine derniere,other,todo,True,True,False,True,,,,,,,False,Vérifier le label ou la prédiction
+68,trouve moi un resto italien pas trop cher stp,restaurant,restaurant,False,True,False,True,,,,,,,False,
+69,un japonais bon et pas a 50 balles par tete,restaurant,note,True,True,False,True,,,,,,,False,Vérifier le label ou la prédiction
+70,reservez une table pour 2 demain soir au nom de alice,restaurant,todo,True,True,False,True,,2026-10-16,,,,2026-10-16,False,Vérifier le label ou la prédiction
+71,resto sympa vers la ou je suis la,restaurant,restaurant,False,True,False,True,,,,,,,False,
+72,c koi le meilleur resto pour manger des ramens,restaurant,restaurant,False,True,False,True,,,,,,,False,
+73,book un truc a manger vendredi,restaurant,todo,True,True,False,True,,2026-10-16,,,,,False,Vérifier le label ou la prédiction
+74,on mange ou ce soir jsp aide moi,restaurant,todo,True,True,False,True,,,,,,,False,Vérifier le label ou la prédiction
+75,explique moi les derivees jsuis perdu,study,study,False,False,False,False,,,,,,,False,
+76,c quoi deja la diference entre biais et variance,study,note,True,False,False,False,,,,,,,False,Vérifier le label ou la prédiction
+77,aide moi a reviser les proba pour le partiel,study,study,False,False,False,False,,,,,,,False,
+78,jcomprend rien au gradient descent,study,study,False,False,False,False,,,,,,,False,
+79,corrige mon exo stp mais explique les etapes,study,study,False,True,False,True,,,,,,,False,
+80,pk on utilise une loss cross entropie en classification,study,other,True,False,True,True,,,,,,,False,Vérifier le label ou la prédiction
+81,les matrices elles font nimp dans mon calcul,study,todo,True,True,False,True,,,,,,,False,Vérifier le label ou la prédiction
+82,faut que j'envoie le cv a la recruteuse ajd,todo,todo,False,False,False,False,,,,,,,False,
+83,penser a racheter du dentifrice et des oeufs,todo,todo,False,False,False,False,,,,,,,False,
+84,appel la banque demain matin,todo,todo,False,True,False,True,,2026-10-16,,,,2026-10-16,False,
+85,faut que je finisse ce machin avant vendredi,todo,todo,False,True,False,True,,,,,,2026-10-16,False,
+86,me rapeler de payer la facture internet,todo,todo,False,False,False,False,,,,,,,False,
+87,organise moi tout ca stp,other,other,False,True,False,True,,,,,,,False,
+88,je dois faire le truc pour le dossier mais jsp quoi,todo,todo,False,True,True,False,,,,,,,False,
+89,mon code de reservation cest ZX458 garde le qqpart,note,todo,True,False,False,False,,,,,,,False,Vérifier le label ou la prédiction
+90,le wifi de lappart : reseau Maison_2G mdp temporaire123,note,todo,True,False,False,False,,,,,,,False,Vérifier le label ou la prédiction
+91,note que pierre prefere les reunions le matin,note,note,False,False,False,False,,,,,,,False,
+92,le numero de suivi du colis c'est FR123456789,note,note,False,False,False,False,,,,,,,False,
+93,a retenir le prof a dit que le rendu serait en pdf,note,note,False,False,False,False,,,,,,,False,
+94,garde ca en tete pour plus tard stp,note,note,False,True,False,True,,,,,,,False,
+95,bon bah voila quoi mdr,other,other,False,True,False,True,,,,,,,False,
+96,le truc il fait pouet pouet dans la dimension bleue,other,other,False,True,False,True,,,,,,,False,
+97,j'ai une idée mais elle est partie faire des courses,other,note,True,True,False,True,,,,,,,False,Vérifier le label ou la prédiction
+98,fais le machin comme l'autre fois enfin tu vois,other,todo,True,True,False,True,,,,,,,False,Vérifier le label ou la prédiction
+99,demain le fromage va calculer la racine carrée du soleil,other,note,True,True,False,True,,2026-10-16,,,,2026-10-16,False,Vérifier le label ou la prédiction
+100,je sais pas trop en vrai bref,other,other,False,True,False,True,,,,,,,False,
+101,est ce que le bleu peut etre plus mardi que la chaise,other,other,False,True,False,True,,2026-10-20,,,,,False,

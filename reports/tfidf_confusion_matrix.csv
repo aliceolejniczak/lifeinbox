@@ -1,0 +1,7 @@
+true_category,calendar,note,other,restaurant,study,todo
+calendar,8,2,0,0,0,0
+note,0,8,0,0,2,0
+other,0,0,9,1,0,0
+restaurant,0,0,0,10,0,0
+study,0,0,0,0,10,0
+todo,1,0,0,1,0,8

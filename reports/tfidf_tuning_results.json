@@ -1,0 +1,93 @@
+{
+  "experiment": "tfidf_hyperparameter_tuning",
+  "dataset_path": "data/raw/train.jsonl",
+  "dataset_size": 300,
+  "training_size": 240,
+  "validation_size": 60,
+  "split": {
+    "test_size": 0.2,
+    "random_state": 42,
+    "stratified": true
+  },
+  "cross_validation": {
+    "method": "StratifiedKFold",
+    "n_splits": 5,
+    "shuffle": true,
+    "random_state": 42,
+    "scoring": "f1_macro",
+    "configurations_tested": 24,
+    "total_fits": 120,
+    "best_macro_f1": 0.8586948171081298
+  },
+  "best_params": {
+    "classifier__C": 10,
+    "classifier__class_weight": null,
+    "tfidf__min_df": 1,
+    "tfidf__ngram_range": [
+      1,
+      1
+    ]
+  },
+  "validation": {
+    "accuracy": 0.8833333333333333,
+    "macro_f1": 0.8812380093844624,
+    "classification_report": {
+      "calendar": {
+        "precision": 0.8888888888888888,
+        "recall": 0.8,
+        "f1-score": 0.8421052631578947,
+        "support": 10.0
+      },
+      "note": {
+        "precision": 0.875,
+        "recall": 0.7,
+        "f1-score": 0.7777777777777778,
+        "support": 10.0
+      },
+      "other": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 10.0
+      },
+      "restaurant": {
+        "precision": 0.7692307692307693,
+        "recall": 1.0,
+        "f1-score": 0.8695652173913043,
+        "support": 10.0
+      },
+      "study": {
+        "precision": 0.8333333333333334,
+        "recall": 1.0,
+        "f1-score": 0.9090909090909091,
+        "support": 10.0
+      },
+      "todo": {
+        "precision": 1.0,
+        "recall": 0.8,
+        "f1-score": 0.8888888888888888,
+        "support": 10.0
+      },
+      "accuracy": 0.8833333333333333,
+      "macro avg": {
+        "precision": 0.8944088319088319,
+        "recall": 0.8833333333333333,
+        "f1-score": 0.8812380093844624,
+        "support": 60.0
+      },
+      "weighted avg": {
+        "precision": 0.8944088319088319,
+        "recall": 0.8833333333333333,
+        "f1-score": 0.8812380093844624,
+        "support": 60.0
+      }
+    }
+  },
+  "artifacts": {
+    "model": "models/tfidf_classifier_tuned.joblib",
+    "cv_results": "reports/tfidf_tuning_cv_results.csv",
+    "predictions": "reports/tfidf_tuned_predictions.csv",
+    "confusion_matrix": "reports/tfidf_tuned_confusion_matrix.csv"
+  },
+  "note": "The holdout validation set has already been inspected during baseline error analysis. Use the independent test benchmark for the final comparison, not for hyperparameter selection."
+}
