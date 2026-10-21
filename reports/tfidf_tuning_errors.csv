@@ -1,0 +1,8 @@
+source_id,message,true_category,predicted_category,correct
+train_line_0123,"Déjeuner avec Clara dans 5 jours à midi, au Café de Flore.",calendar,restaurant,False
+train_line_0047,Le café que j’ai aimé s’appelle Café Kitsuné.,note,restaurant,False
+train_line_0284,Les exports de résultats doivent garder les identifiants d'origine.,note,study,False
+train_line_0220,Préparer les slides de la présentation dans 3 jours.,todo,calendar,False
+train_line_0155,Achète des piles quand tu passes au supermarché.,todo,restaurant,False
+train_line_0048,Ma liste de lecture contient trois articles sur les LLM.,note,study,False
+train_line_0189,Il faudrait qu'on se voie bientôt pour parler du dossier.,calendar,note,False
